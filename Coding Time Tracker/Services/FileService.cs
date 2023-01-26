@@ -56,7 +56,7 @@ namespace Coding_Time_Tracker.Services
                 LineProperties fileProperty = GetLineProperty(lines[i]);
                 if (fileProperty == linePropertyToWrite)
                 {
-                    lines[i] = data;
+                    lines[i] = $"{linePropertyToWrite}: {data}";
                 }
             }
             File.WriteAllLines(_fileName, lines);
