@@ -8,7 +8,7 @@ using System.IO;
 namespace Coding_Time_Tracker.Services
 {
     /// <summary>
-    /// Service to operate with files that store the data of the application.
+    /// Service that operates with files which store the data of the application.
     /// </summary>
     public class FileService
     {
