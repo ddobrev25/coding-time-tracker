@@ -5,7 +5,6 @@ using Coding_Time_Tracker.Services;
 
 
 string fileName = "file.cttf";
-
 TimeTrigger tt = new TimeTrigger(5);
 tt.Triggered += () =>
 {

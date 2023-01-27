@@ -7,14 +7,26 @@ using System.IO;
 
 namespace Coding_Time_Tracker.Services
 {
+    /// <summary>
+    /// Service to operate with files that store the data of the application.
+    /// </summary>
     public class FileService
     {
-        private string _fileName;
-
+        /// <summary>
+        /// Initiator
+        /// </summary>
+        /// <param name="fileName">The name of the file to work on.</param>
         public FileService(string fileName)
         {
             _fileName = fileName;
         }
+
+
+        /// <summary>
+        /// Reads a value from the file given a specific key (line property).
+        /// </summary>
+        /// <param name="linePropertyToRead">The line property (key) to find the value for.</param>
+        /// <returns>The value that matches the given key.</returns>
         public string ReadLineProperty(LineProperties linePropertyToRead)
         {
             var lines = File.ReadAllLines(_fileName);
@@ -29,10 +41,19 @@ namespace Coding_Time_Tracker.Services
             }
             return string.Empty;
         }
+
+
+
+        /// <summary>
+        /// Writes a value to the file given the specific key (line property) and the data to write.
+        /// </summary>
+        /// <param name="linePropertyToWrite">The line property (key) to write the value for.</param>
+        /// <param name="data">The value to write.</param>
+        /// <returns>If the operation was completed successfully.</returns>
         public bool WriteLineProperty(LineProperties linePropertyToWrite, string data)
         {
-            //try
-            //{
+            try
+            {
             if (!File.Exists(_fileName))
             {
                 using (StreamWriter sw = new StreamWriter(_fileName))
@@ -60,11 +81,19 @@ namespace Coding_Time_Tracker.Services
                 }
             }
             File.WriteAllLines(_fileName, lines);
-            //}
-            //catch { return false; }
+            }
+            catch { return false; }
             return true;
         }
-        private bool PropertyExistsInFile(LineProperties lineProperty) //checks if a line with a given property exists in the file 
+
+
+
+        /// <summary>
+        /// checks if a line with a given property exists in the file.
+        /// </summary>
+        /// <param name="lineProperty">The key (line property) to check for.</param>
+        /// <returns>Whether a given key (line property) exists in the file.</returns>
+        private bool PropertyExistsInFile(LineProperties lineProperty)
         {
             var lines = File.ReadAllLines(_fileName);
 
@@ -77,6 +106,14 @@ namespace Coding_Time_Tracker.Services
             }
             return false;
         }
+
+
+
+        /// <summary>
+        /// Extracts the key from a line of text.
+        /// </summary>
+        /// <param name="line">The text to extract the key from.</param>
+        /// <returns>The key that was found. Returns the "None" type if no other valid key was found.</returns>
         private LineProperties GetLineProperty(string line)
         {
             string dataType = line.Split(": ")[0]; //gets the property of a line
@@ -88,5 +125,7 @@ namespace Coding_Time_Tracker.Services
                     return LineProperties.None;
             }
         }
+
+        private string _fileName;
     }
 }
