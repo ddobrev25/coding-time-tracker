@@ -21,6 +21,14 @@ namespace Coding_Time_Tracker
         }
 
 
+        /// <summary>
+        /// The delay between triggers.
+        /// </summary>
+        public TimeSpan TriggerDelay
+        {
+            get { return _triggerDelay; }
+        }
+
 
         /// <summary>
         /// Initiator

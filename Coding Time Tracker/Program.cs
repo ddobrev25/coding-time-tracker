@@ -11,6 +11,5 @@ tt.Triggered += () =>
 {
     Console.WriteLine("triggered");
 };
-
 Thread.Sleep(7000);
 Thread.Sleep(100000);
