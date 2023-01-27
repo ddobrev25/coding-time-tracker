@@ -29,7 +29,7 @@ namespace Coding_Time_Tracker.Services
             }
             return string.Empty;
         }
-        public bool WriteFileProperty(LineProperties linePropertyToWrite, string data)
+        public bool WriteLineProperty(LineProperties linePropertyToWrite, string data)
         {
             //try
             //{
