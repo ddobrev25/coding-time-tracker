@@ -9,10 +9,19 @@ namespace Coding_Time_Tracker
 {
     public class TimeTrigger : IDisposable
     {
-        public CancellationTokenSource? TokenSource { get; private set; } = null;
-        public Task? RunningTask { get; private set; } = null;
+        public DateTime TriggerTime
+        {
+            get 
+            { 
+                return DateTime.Now + _triggerAfter; 
+            }
+        }
 
-        private TimeSpan _triggerAfter;
+        private CancellationTokenSource? _tokenSource = null;
+
+        private Task? _runningTask = null;
+
+        private TimeSpan _triggerAfter = TimeSpan.Zero;
 
         public TimeTrigger(int seconds)
         {
@@ -43,27 +52,26 @@ namespace Coding_Time_Tracker
                 throw new InvalidDataException();
             }
 
-            if (RunningTask != null)
+            if (_runningTask != null)
             {
                 throw new Exception();
             }
 
-            DateTime triggerTime = DateTime.Now + _triggerAfter;
-            TokenSource = new CancellationTokenSource();
+            _tokenSource = new CancellationTokenSource();
 
-            RunningTask = Task.Factory.StartNew(async () =>
+            _runningTask = Task.Factory.StartNew(async () =>
             {
                 while (true)
                 {
-                    if (triggerTime <= DateTime.Now)
+                    if (TriggerTime <= DateTime.Now)
                     {
                         OnTriggered();
                         Dispose();
                         return;
                     }
-                    await Task.Delay(1000, TokenSource.Token);
+                    await Task.Delay(1000, _tokenSource.Token);
                 }
-            }, TokenSource.Token);
+            }, _tokenSource.Token);
         }
         public void Cancel()
         {
@@ -77,11 +85,11 @@ namespace Coding_Time_Tracker
 
         public void Dispose()
         {
-            TokenSource?.Cancel();
-            TokenSource?.Dispose();
-            TokenSource = null;
-            RunningTask?.Dispose();
-            RunningTask = null;
+            _tokenSource?.Cancel();
+            _tokenSource?.Dispose();
+            _tokenSource = null;
+            _runningTask?.Dispose();
+            _runningTask = null;
         }
         ~TimeTrigger() => Dispose();
 
