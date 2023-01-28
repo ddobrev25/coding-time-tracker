@@ -8,7 +8,7 @@ using System.Threading;
 namespace Coding_Time_Tracker
 {
     /// <summary>
-    /// Provides a disposable object that will trigger periodically with a given delay.
+    /// Provides a disposable object that will trigger an event periodically with a given delay.
     /// </summary>
     public class TimeTrigger : IDisposable
     {
@@ -114,17 +114,11 @@ namespace Coding_Time_Tracker
         /// Initiates the internal clock of the object.
         /// </summary>
         /// <exception cref="InvalidDataException"></exception>
-        /// <exception cref="Exception"></exception>
         private void Start()
         {
             if (TriggerDelay < TimeSpan.Zero)
             {
                 throw new InvalidDataException();
-            }
-
-            if (_runningTask != null)
-            {
-                throw new Exception();
             }
 
             _tokenSource = new CancellationTokenSource();
