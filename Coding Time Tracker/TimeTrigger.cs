@@ -13,13 +13,13 @@ namespace Coding_Time_Tracker
     public class TimeTrigger : IDisposable
     {
         /// <summary>
-        /// Time of the next trigger.
+        /// The time of the next trigger.
         /// </summary>
         public DateTime TriggerTime { get; private set; }
 
 
         /// <summary>
-        /// Delay between triggers.
+        /// The delay between triggers.
         /// </summary>
         public TimeSpan TriggerDelay { get; private set; }
 
@@ -28,21 +28,36 @@ namespace Coding_Time_Tracker
         /// Takes seconds as an argument for delay and initiates the timer.
         /// </summary>
         /// <param name="seconds">The ammout of seconds to delay.</param>
+        /// <exception cref="ArgumentException"></exception>
         public TimeTrigger(int seconds)
         {
-            TriggerDelay = TimeSpan.FromSeconds(seconds);
+            TimeSpan triggerDelay = TimeSpan.FromSeconds(seconds);
+
+            if(!IsDelayInCorrectFormat(triggerDelay))
+            {
+                throw new ArgumentException();
+            }
+
+            TriggerDelay = triggerDelay;
             Start();
         }
-
 
         /// <summary>
         /// Takes minutes and seconds as arguments for delay and initiates the timer.
         /// </summary>
         /// <param name="minutes">The ammout of minutes to delay.</param>
         /// <param name="seconds">The ammout of seconds to delay.</param>
+        /// <exception cref="ArgumentException"></exception>
         public TimeTrigger(int minutes, int seconds)
         {
-            TriggerDelay = new TimeSpan(0, minutes, seconds);
+            TimeSpan triggerDelay = new TimeSpan(0, minutes, seconds);
+
+            if (!IsDelayInCorrectFormat(triggerDelay))
+            {
+                throw new ArgumentException();
+            }
+
+            TriggerDelay = triggerDelay;
             Start();
         }
 
@@ -53,9 +68,17 @@ namespace Coding_Time_Tracker
         /// <param name="hours">The ammout of hours to delay.</param>
         /// <param name="minutes">The ammout of minutes to delay.</param>
         /// <param name="seconds">The ammout of seconds to delay.</param>
+        /// <exception cref="ArgumentException"></exception>
         public TimeTrigger(int hours, int minutes, int seconds)
         {
-            TriggerDelay = new TimeSpan(hours, minutes, seconds);
+            TimeSpan triggerDelay = new TimeSpan(hours, minutes, seconds);
+
+            if (!IsDelayInCorrectFormat(triggerDelay))
+            {
+                throw new ArgumentException();
+            }
+
+            TriggerDelay = triggerDelay;
             Start();
         }
 
@@ -64,8 +87,14 @@ namespace Coding_Time_Tracker
         /// Takes a TimeSpan object for delay and initiates the timer.
         /// </summary>
         /// <param name="triggerDelay">Delay in TimeSpan format.</param>
+        /// <exception cref="ArgumentException"></exception>
         public TimeTrigger(TimeSpan triggerDelay)
         {
+            if (!IsDelayInCorrectFormat(triggerDelay))
+            {
+                throw new ArgumentException();
+            }
+
             TriggerDelay = triggerDelay;
             Start();
         }
@@ -113,17 +142,11 @@ namespace Coding_Time_Tracker
         /// <summary>
         /// Initiates the internal clock of the object.
         /// </summary>
-        /// <exception cref="InvalidDataException"></exception>
         private void Start()
         {
-            if (TriggerDelay < TimeSpan.Zero)
-            {
-                throw new InvalidDataException();
-            }
-
             _tokenSource = new CancellationTokenSource();
 
-            SetTriggerTime();
+            CalculateTriggerTime();
 
             _runningTask = Task.Factory.StartNew(async () =>
             {
@@ -133,17 +156,28 @@ namespace Coding_Time_Tracker
                     if (TriggerTime <= DateTime.Now)
                     {
                         OnTriggered();
-                        SetTriggerTime();
+                        CalculateTriggerTime();
                     }
                 }
             }, _tokenSource.Token);
         }
 
 
+
         /// <summary>
-        /// Sets the trigger time to the correct value compared to the current time and the trigger delay.
+        /// Checks whether a given delay value is in the correct format.
         /// </summary>
-        private void SetTriggerTime()
+        /// <param name="delay">The delay to check.</param>
+        /// <returns>Whether a given delay value is in the correct format.</returns>
+        private bool IsDelayInCorrectFormat(TimeSpan delay) => delay > TimeSpan.Zero;
+
+
+
+
+        /// <summary>
+        /// Calculates and sets the trigger time to the correct value compared to the current time and the trigger delay.
+        /// </summary>
+        private void CalculateTriggerTime()
         {
             TriggerTime = DateTime.Now + TriggerDelay;
         }
