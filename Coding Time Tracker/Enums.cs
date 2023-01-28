@@ -27,7 +27,7 @@ namespace Coding_Time_Tracker
     /// <summary>
     /// Enumeration of target apps for monitoring.
     /// </summary>
-    public enum ApplicationToMonitor
+    public enum Application
     {
         /// <summary>
         /// Visual Studio 2022.

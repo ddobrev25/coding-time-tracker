@@ -15,19 +15,13 @@ namespace Coding_Time_Tracker
         /// <summary>
         /// Time of the next trigger.
         /// </summary>
-        public DateTime TriggerTime
-        {
-            get { return _triggerTime; }
-        }
+        public DateTime TriggerTime { get; private set; }
 
 
         /// <summary>
         /// Delay between triggers.
         /// </summary>
-        public TimeSpan TriggerDelay
-        {
-            get { return _triggerDelay; }
-        }
+        public TimeSpan TriggerDelay { get; private set; }
 
 
         /// <summary>
@@ -36,7 +30,7 @@ namespace Coding_Time_Tracker
         /// <param name="seconds">The ammout of seconds to delay.</param>
         public TimeTrigger(int seconds)
         {
-            _triggerDelay = TimeSpan.FromSeconds(seconds);
+            TriggerDelay = TimeSpan.FromSeconds(seconds);
             Start();
         }
 
@@ -48,7 +42,7 @@ namespace Coding_Time_Tracker
         /// <param name="seconds">The ammout of seconds to delay.</param>
         public TimeTrigger(int minutes, int seconds)
         {
-            _triggerDelay = new TimeSpan(0, minutes, seconds);
+            TriggerDelay = new TimeSpan(0, minutes, seconds);
             Start();
         }
 
@@ -61,7 +55,7 @@ namespace Coding_Time_Tracker
         /// <param name="seconds">The ammout of seconds to delay.</param>
         public TimeTrigger(int hours, int minutes, int seconds)
         {
-            _triggerDelay = new TimeSpan(hours, minutes, seconds);
+            TriggerDelay = new TimeSpan(hours, minutes, seconds);
             Start();
         }
 
@@ -72,7 +66,7 @@ namespace Coding_Time_Tracker
         /// <param name="triggerDelay">Delay in TimeSpan format.</param>
         public TimeTrigger(TimeSpan triggerDelay)
         {
-            _triggerDelay = triggerDelay;
+            TriggerDelay = triggerDelay;
             Start();
         }
 
@@ -84,6 +78,8 @@ namespace Coding_Time_Tracker
             Dispose();
         }
 
+
+        ///<inheritdoc/>
         public void Dispose()
         {
             _tokenSource?.Cancel();
@@ -112,9 +108,16 @@ namespace Coding_Time_Tracker
             Triggered?.Invoke();
         }
 
+
+
+        /// <summary>
+        /// Initiates the internal clock of the object.
+        /// </summary>
+        /// <exception cref="InvalidDataException"></exception>
+        /// <exception cref="Exception"></exception>
         private void Start()
         {
-            if (_triggerDelay < TimeSpan.Zero)
+            if (TriggerDelay < TimeSpan.Zero)
             {
                 throw new InvalidDataException();
             }
@@ -133,7 +136,7 @@ namespace Coding_Time_Tracker
                 while (true)
                 {
                     await Task.Delay(1000, _tokenSource.Token);
-                    if (_triggerTime <= DateTime.Now)
+                    if (TriggerTime <= DateTime.Now)
                     {
                         OnTriggered();
                         SetTriggerTime();
@@ -143,18 +146,25 @@ namespace Coding_Time_Tracker
         }
 
 
+        /// <summary>
+        /// Sets the trigger time to the correct value compared to the current time and the trigger delay.
+        /// </summary>
         private void SetTriggerTime()
         {
-            _triggerTime = DateTime.Now + _triggerDelay;
+            TriggerTime = DateTime.Now + TriggerDelay;
         }
 
 
-        private DateTime _triggerTime;
-
-        private TimeSpan _triggerDelay;
-
+        /// <summary>
+        /// Token source that will provide a cancellation token.
+        /// </summary>
         private CancellationTokenSource? _tokenSource = null;
 
+
+
+        /// <summary>
+        /// Reference to the object's currently running task.
+        /// </summary>
         private Task? _runningTask = null;
     }
 }
