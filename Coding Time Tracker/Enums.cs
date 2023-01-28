@@ -9,7 +9,7 @@ namespace Coding_Time_Tracker
     /// <summary>
     /// Enumeration of possible line properties.
     /// </summary>
-    public enum LineProperty 
+    public enum LineKey 
     {
         /// <summary>
         /// Default value.

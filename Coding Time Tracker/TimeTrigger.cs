@@ -152,11 +152,14 @@ namespace Coding_Time_Tracker
             {
                 while (true)
                 {
-                    await Task.Delay(1000, _tokenSource.Token);
                     if (TriggerTime <= DateTime.Now)
                     {
                         OnTriggered();
                         CalculateTriggerTime();
+                    }
+                    else
+                    {
+                        await Task.Delay(1000, _tokenSource.Token);
                     }
                 }
             }, _tokenSource.Token);
