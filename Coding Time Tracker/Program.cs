@@ -1,14 +1,11 @@
 ﻿using Coding_Time_Tracker;
 using Coding_Time_Tracker.Services;
-
-
-
+using System.Diagnostics;
 
 string fileName = "file.cttf";
-TimeTrigger tt = new TimeTrigger(5);
-tt.Triggered += () =>
-{
-    Console.WriteLine("triggered");
-};
-Thread.Sleep(7000);
-Thread.Sleep(100000);
+
+List<ApplicationToMonitor> targetApps = new List<ApplicationToMonitor>();
+targetApps.Add(ApplicationToMonitor.VS2022);
+targetApps.Add(ApplicationToMonitor.VSCode);
+ApplicationMonitor processMonitor = new ApplicationMonitor(targetApps);
+Console.ReadKey();

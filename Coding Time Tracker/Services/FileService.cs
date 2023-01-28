@@ -13,7 +13,7 @@ namespace Coding_Time_Tracker.Services
     public class FileService
     {
         /// <summary>
-        /// Initiator
+        /// Initiates the object with the given filename.
         /// </summary>
         /// <param name="fileName">The name of the file to work on.</param>
         public FileService(string fileName)
@@ -27,13 +27,13 @@ namespace Coding_Time_Tracker.Services
         /// </summary>
         /// <param name="linePropertyToRead">The line property (key) to find the value for.</param>
         /// <returns>The value that matches the given key.</returns>
-        public string ReadLineProperty(LineProperties linePropertyToRead)
+        public string ReadLineProperty(LineProperty linePropertyToRead)
         {
             var lines = File.ReadAllLines(_fileName);
 
             foreach (var line in lines)
             {
-                LineProperties lineProperty = GetLineProperty(line);
+                LineProperty lineProperty = GetLineProperty(line);
                 if(lineProperty == linePropertyToRead)
                 {
                     return line.Split(": ")[1];
@@ -50,7 +50,7 @@ namespace Coding_Time_Tracker.Services
         /// <param name="linePropertyToWrite">The line property (key) to write the value for.</param>
         /// <param name="data">The value to write.</param>
         /// <returns>If the operation was completed successfully.</returns>
-        public bool WriteLineProperty(LineProperties linePropertyToWrite, string data)
+        public bool WriteLineProperty(LineProperty linePropertyToWrite, string data)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace Coding_Time_Tracker.Services
 
             for (int i = 0; i < lines.Length; i++) // otherwise, find the line with the given property and change it
             {
-                LineProperties fileProperty = GetLineProperty(lines[i]);
+                LineProperty fileProperty = GetLineProperty(lines[i]);
                 if (fileProperty == linePropertyToWrite)
                 {
                     lines[i] = $"{linePropertyToWrite}: {data}";
@@ -89,11 +89,11 @@ namespace Coding_Time_Tracker.Services
 
 
         /// <summary>
-        /// checks if a line with a given property exists in the file.
+        /// Checks if a line with a given property exists in the file.
         /// </summary>
         /// <param name="lineProperty">The key (line property) to check for.</param>
         /// <returns>Whether a given key (line property) exists in the file.</returns>
-        private bool PropertyExistsInFile(LineProperties lineProperty)
+        private bool PropertyExistsInFile(LineProperty lineProperty)
         {
             var lines = File.ReadAllLines(_fileName);
 
@@ -114,15 +114,15 @@ namespace Coding_Time_Tracker.Services
         /// </summary>
         /// <param name="line">The text to extract the key from.</param>
         /// <returns>The key that was found. Returns the "None" type if no other valid key was found.</returns>
-        private LineProperties GetLineProperty(string line)
+        private LineProperty GetLineProperty(string line)
         {
             string dataType = line.Split(": ")[0]; //gets the property of a line
             switch (dataType)
             {
                 case "TotalTime":
-                    return LineProperties.TotalTime;
+                    return LineProperty.TotalTime;
                 default:
-                    return LineProperties.None;
+                    return LineProperty.None;
             }
         }
 

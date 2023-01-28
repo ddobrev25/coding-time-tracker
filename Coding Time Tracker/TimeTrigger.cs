@@ -13,7 +13,7 @@ namespace Coding_Time_Tracker
     public class TimeTrigger : IDisposable
     {
         /// <summary>
-        /// The time of the next trigger.
+        /// Time of the next trigger.
         /// </summary>
         public DateTime TriggerTime
         {
@@ -22,7 +22,7 @@ namespace Coding_Time_Tracker
 
 
         /// <summary>
-        /// The delay between triggers.
+        /// Delay between triggers.
         /// </summary>
         public TimeSpan TriggerDelay
         {
@@ -31,7 +31,7 @@ namespace Coding_Time_Tracker
 
 
         /// <summary>
-        /// Initiator
+        /// Takes seconds as an argument for delay and initiates the timer.
         /// </summary>
         /// <param name="seconds">The ammout of seconds to delay.</param>
         public TimeTrigger(int seconds)
@@ -42,7 +42,7 @@ namespace Coding_Time_Tracker
 
 
         /// <summary>
-        /// Initiator
+        /// Takes minutes and seconds as arguments for delay and initiates the timer.
         /// </summary>
         /// <param name="minutes">The ammout of minutes to delay.</param>
         /// <param name="seconds">The ammout of seconds to delay.</param>
@@ -54,7 +54,7 @@ namespace Coding_Time_Tracker
 
 
         /// <summary>
-        /// Initiator
+        /// Takes hours, minutes and seconds as arguments for delay and initiates the timer.
         /// </summary>
         /// <param name="hours">The ammout of hours to delay.</param>
         /// <param name="minutes">The ammout of minutes to delay.</param>
@@ -67,7 +67,7 @@ namespace Coding_Time_Tracker
 
 
         /// <summary>
-        /// Initiator
+        /// Takes a TimeSpan object for delay and initiates the timer.
         /// </summary>
         /// <param name="triggerDelay">Delay in TimeSpan format.</param>
         public TimeTrigger(TimeSpan triggerDelay)
