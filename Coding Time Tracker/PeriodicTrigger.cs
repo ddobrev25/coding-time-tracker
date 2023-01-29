@@ -10,7 +10,7 @@ namespace Coding_Time_Tracker
     /// <summary>
     /// Provides a disposable object that will trigger an event periodically with a given delay.
     /// </summary>
-    public class TimeTrigger : IDisposable
+    public class PeriodicTrigger : IDisposable
     {
         /// <summary>
         /// The time of the next trigger.
@@ -29,17 +29,17 @@ namespace Coding_Time_Tracker
         /// </summary>
         /// <param name="seconds">The ammout of seconds to delay.</param>
         /// <exception cref="ArgumentException"></exception>
-        public TimeTrigger(int seconds)
+        public PeriodicTrigger(int seconds)
         {
             TimeSpan triggerDelay = TimeSpan.FromSeconds(seconds);
 
             if(!IsDelayInCorrectFormat(triggerDelay))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Trigger delay value is not in the correct format.");
             }
 
             TriggerDelay = triggerDelay;
-            Start();
+            _ = Start();
         }
 
         /// <summary>
@@ -48,19 +48,18 @@ namespace Coding_Time_Tracker
         /// <param name="minutes">The ammout of minutes to delay.</param>
         /// <param name="seconds">The ammout of seconds to delay.</param>
         /// <exception cref="ArgumentException"></exception>
-        public TimeTrigger(int minutes, int seconds)
+        public PeriodicTrigger(int minutes, int seconds)
         {
             TimeSpan triggerDelay = new TimeSpan(0, minutes, seconds);
 
             if (!IsDelayInCorrectFormat(triggerDelay))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Trigger delay value is not in the correct format.");
             }
 
             TriggerDelay = triggerDelay;
-            Start();
+            _ = Start();
         }
-
 
         /// <summary>
         /// Takes hours, minutes and seconds as arguments for delay and initiates the timer.
@@ -69,17 +68,17 @@ namespace Coding_Time_Tracker
         /// <param name="minutes">The ammout of minutes to delay.</param>
         /// <param name="seconds">The ammout of seconds to delay.</param>
         /// <exception cref="ArgumentException"></exception>
-        public TimeTrigger(int hours, int minutes, int seconds)
+        public PeriodicTrigger(int hours, int minutes, int seconds)
         {
             TimeSpan triggerDelay = new TimeSpan(hours, minutes, seconds);
 
             if (!IsDelayInCorrectFormat(triggerDelay))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Trigger delay value is not in the correct format.");
             }
 
             TriggerDelay = triggerDelay;
-            Start();
+            _ = Start();
         }
 
 
@@ -88,15 +87,15 @@ namespace Coding_Time_Tracker
         /// </summary>
         /// <param name="triggerDelay">Delay in TimeSpan format.</param>
         /// <exception cref="ArgumentException"></exception>
-        public TimeTrigger(TimeSpan triggerDelay)
+        public PeriodicTrigger(TimeSpan triggerDelay)
         {
             if (!IsDelayInCorrectFormat(triggerDelay))
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Trigger delay value is not in the correct format.");
             }
 
             TriggerDelay = triggerDelay;
-            Start();
+            _ = Start();
         }
 
         /// <summary>
@@ -114,14 +113,12 @@ namespace Coding_Time_Tracker
             _tokenSource?.Cancel();
             _tokenSource?.Dispose();
             _tokenSource = null;
-            _runningTask?.Dispose();
-            _runningTask = null;
         }
 
         /// <summary>
         /// Disposes the object when out of scope.
         /// </summary>
-        ~TimeTrigger() => Dispose();
+        ~PeriodicTrigger() => Dispose();
 
 
         /// <summary>
@@ -142,27 +139,24 @@ namespace Coding_Time_Tracker
         /// <summary>
         /// Initiates the internal clock of the object.
         /// </summary>
-        private void Start()
+        private async Task Start()
         {
             _tokenSource = new CancellationTokenSource();
 
             CalculateTriggerTime();
 
-            _runningTask = Task.Factory.StartNew(async () =>
+            while (true)
             {
-                while (true)
+                if (TriggerTime <= DateTime.Now)
                 {
-                    if (TriggerTime <= DateTime.Now)
-                    {
-                        OnTriggered();
-                        CalculateTriggerTime();
-                    }
-                    else
-                    {
-                        await Task.Delay(1000, _tokenSource.Token);
-                    }
+                    OnTriggered();
+                    CalculateTriggerTime();
                 }
-            }, _tokenSource.Token);
+                else
+                {
+                    await Task.Delay(1000, _tokenSource.Token);
+                }
+            }
         }
 
 
@@ -180,22 +174,13 @@ namespace Coding_Time_Tracker
         /// <summary>
         /// Calculates and sets the trigger time to the correct value compared to the current time and the trigger delay.
         /// </summary>
-        private void CalculateTriggerTime()
-        {
-            TriggerTime = DateTime.Now + TriggerDelay;
-        }
+        private void CalculateTriggerTime() => TriggerTime = DateTime.Now + TriggerDelay;
+
 
 
         /// <summary>
         /// Token source that will provide a cancellation token.
         /// </summary>
         private CancellationTokenSource? _tokenSource = null;
-
-
-
-        /// <summary>
-        /// Reference to the object's currently running task.
-        /// </summary>
-        private Task? _runningTask = null;
     }
 }

@@ -135,7 +135,7 @@ namespace Coding_Time_Tracker
         /// </summary>
         /// <param name="lineKey">The key to check for.</param>
         /// <returns>Whether a given key exists in the file.</returns>
-        private bool KeyExistsInFile(LineKey lineKey)
+        public bool KeyExistsInFile(LineKey lineKey)
         {
             var lines = File.ReadAllLines(_filePath);
 
