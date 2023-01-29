@@ -17,7 +17,7 @@ async Task StartApplicationMonitoring(TimeSpan checkDelay, TimeSpan fileUpdateDe
     ApplicationMonitor monitor = new ApplicationMonitor(Application.VS2022, Application.VSCode);
 
     // Declare time running variable and set it to a starting value of 0.
-    TimeSpan timeRunning = TimeSpan.Zero;
+    TimeSpan elapsedTimeRunning = TimeSpan.Zero;
 
     while (true)
     {
@@ -32,10 +32,10 @@ async Task StartApplicationMonitoring(TimeSpan checkDelay, TimeSpan fileUpdateDe
         }
 
         //If at least one application is running, increase the running time by the check delay.
-        timeRunning += checkDelay;
+        elapsedTimeRunning += checkDelay;
 
         //If the time running has not reached the update delay, continue.
-        if (timeRunning <= fileUpdateDelay)
+        if (elapsedTimeRunning <= fileUpdateDelay)
         {
             continue;
         }
@@ -45,7 +45,7 @@ async Task StartApplicationMonitoring(TimeSpan checkDelay, TimeSpan fileUpdateDe
         //If the key has not yet been written to the file, write it with the current time running value.
         if (!file.KeyExistsInFile(LineKey.TotalTime))
         {
-            file.WriteValue(LineKey.TotalTime, timeRunning.ToString());
+            file.WriteValue(LineKey.TotalTime, elapsedTimeRunning.ToString());
         }
 
         // Else if there is a value already, update it.
@@ -58,13 +58,13 @@ async Task StartApplicationMonitoring(TimeSpan checkDelay, TimeSpan fileUpdateDe
             TimeSpan currentValue = TimeSpan.Parse(totalTime);
 
             //Calculate the new value by adding the current value and the time running.
-            TimeSpan newValue = currentValue + timeRunning;
+            TimeSpan newValue = currentValue + elapsedTimeRunning;
 
-            //Write tne new value to the file.
+            //Write the new value to the file.
             file.WriteValue(LineKey.TotalTime, newValue.ToString());
         }
 
         //Annul the time running value
-        timeRunning = TimeSpan.Zero;
+        elapsedTimeRunning = TimeSpan.Zero;
     }
 }
