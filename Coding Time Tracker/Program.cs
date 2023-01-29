@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 string fileName = "file.cttf";
 
 
-
+//Initialize file manager object.
 FileManager file = new FileManager(fileName);
 
 // Initialize application monitor object.
@@ -22,14 +22,15 @@ TimeSpan fileUpdateDelay = TimeSpan.FromSeconds(1);
 
 
 //How often the user will be checked if they are still active.
-TimeSpan userActivityCheckDelay = TimeSpan.FromSeconds(3);
+TimeSpan userActivityCheckDelay = TimeSpan.FromMinutes(30);
 
-
+//Initialize periodic trigger object.
 PeriodicTrigger userActivityCheckTrigger = new PeriodicTrigger(userActivityCheckDelay);
 
+//Subscribe for the triggered event.
 userActivityCheckTrigger.Triggered += UserActivityCheckTrigger_Triggered;
 
-
+//Start the monitorig.
 await StartApplicationMonitoring(checkDelay, fileUpdateDelay);
 
 
@@ -44,7 +45,7 @@ void UserActivityCheckTrigger_Triggered()
     }
 
     //Show the user a message box asking whether they are stll coding or not and save the answer to a variable.
-    MessageBoxAnswer answer = UserActivityCheckMessageBox.Show();
+    MessageBoxAnswer answer = MessageBoxHelper.ShowActivityCheckMessageBox();
 
     //If the answer is not no then return and continue normal execution.
     if (answer != MessageBoxAnswer.No)
