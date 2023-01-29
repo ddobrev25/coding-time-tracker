@@ -130,6 +130,16 @@ namespace Coding_Time_Tracker
 
 
         /// <summary>
+        /// Retrieves an application's process name.
+        /// </summary>
+        /// <param name="application">The application to retrieve the process name for.</param>
+        /// <returns>The process name.</returns>
+        public string GetApplicationProcessName(Application application) => _processNameToApplicationMapping[application];
+
+
+
+
+        /// <summary>
         /// Mapping of process names to applications.
         /// </summary>
         private readonly Dictionary<Application, string> _processNameToApplicationMapping = new Dictionary<Application, string>()

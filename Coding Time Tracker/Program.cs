@@ -1,20 +1,75 @@
 ﻿using Coding_Time_Tracker;
 using System.Diagnostics;
-
+using System.Runtime.InteropServices;
 
 string fileName = "file.cttf";
+
+
+
 FileManager file = new FileManager(fileName);
-TimeSpan checkDelay = TimeSpan.FromMilliseconds(100); //The delay between application running checks. The lower the check delay, the more accurate the calculations. But worse performance.
-TimeSpan fileUpdateDelay = TimeSpan.FromSeconds(1); //How often to update the file. The lower, the more accurate. But worse performance.
-_ = StartApplicationMonitoring(checkDelay, fileUpdateDelay);
 
-Thread.Sleep(999999999);
+// Initialize application monitor object.
+ApplicationMonitor monitor = new ApplicationMonitor(Application.VSCode, Application.VS2022);
 
+
+//The delay between checks of whether applications are running.
+//The lower the check delay, the more accurate the calculations, but the worse the performance.
+TimeSpan checkDelay = TimeSpan.FromMilliseconds(100);
+
+
+//How often to update the file. The lower, the more accurate but the worse the performance.
+TimeSpan fileUpdateDelay = TimeSpan.FromSeconds(1);
+
+
+//How often the user will be checked if they are still active.
+TimeSpan userActivityCheckDelay = TimeSpan.FromSeconds(3);
+
+
+PeriodicTrigger userActivityCheckTrigger = new PeriodicTrigger(userActivityCheckDelay);
+
+userActivityCheckTrigger.Triggered += UserActivityCheckTrigger_Triggered;
+
+
+await StartApplicationMonitoring(checkDelay, fileUpdateDelay);
+
+
+
+void UserActivityCheckTrigger_Triggered()
+{
+
+    //If there is no application running, no need to show the message.
+    if (!monitor.IsAnyApplicationRunning())
+    {
+        return;
+    }
+
+    //Show the user a message box asking whether they are stll coding or not and save the answer to a variable.
+    MessageBoxAnswer answer = UserActivityCheckMessageBox.Show();
+
+    //If the answer is not no then return and continue normal execution.
+    if (answer != MessageBoxAnswer.No)
+    {
+        return;
+    }
+
+    //This code is reached only if the answer was no. In that case close all monitored applications, as they are not used.
+
+    //Loop through all monitored applications.
+    foreach (var app in monitor.Applications)
+    {
+        //Get the process name of the application.
+        string processName = monitor.GetApplicationProcessName(app);
+
+        //Find the process instance running with the given process name.
+        var process = Process.GetProcessesByName(processName).FirstOrDefault();
+
+        //If the process is not null, kill it.
+        process?.Kill();
+    }
+}
 
 async Task StartApplicationMonitoring(TimeSpan checkDelay, TimeSpan fileUpdateDelay)
 {
-    // Initialize application monitor object.
-    ApplicationMonitor monitor = new ApplicationMonitor(Application.VS2022, Application.VSCode);
 
     // Declare time running variable and set it to a starting value of 0.
     TimeSpan elapsedTimeRunning = TimeSpan.Zero;

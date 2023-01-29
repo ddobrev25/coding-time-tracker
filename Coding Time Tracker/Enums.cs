@@ -47,4 +47,10 @@ namespace Coding_Time_Tracker
         /// </summary>
         VSCode,
     }
+
+    public enum MessageBoxAnswer
+    {
+        Yes = 6,
+        No = 7,
+    }
 }
