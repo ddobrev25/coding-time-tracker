@@ -21,6 +21,13 @@ namespace Coding_Time_Tracker
         /// Total time the target applications have run.
         /// </summary>
         TotalTime,
+
+
+
+        /// <summary>
+        /// The time that the file was created.
+        /// </summary>
+        TimeCreated,
     }
 
 
